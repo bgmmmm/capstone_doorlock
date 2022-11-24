@@ -1,3 +1,4 @@
+#sensor_module.py
 import gpiozero as gpio
 import spidev
 import time
@@ -41,5 +42,4 @@ def read_spi_adc():
     adcValue = ((buff[1]&3)<<8)+buff[2]		
     spi.close()
 
-    return adcValue 
-
+    return adcValue

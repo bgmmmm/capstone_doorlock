@@ -1,3 +1,4 @@
+#face_module.py
 import gpiozero as gpio
 import os
 import time
@@ -7,7 +8,7 @@ from PIL import Image
 from sensor_module import *
 
 
-def face_recognition(): #
+def face_recognition(): # 30번 연속 동일인(등록된)이면 신뢰도평균 출력 후 True 반환
 
     start1 = time.time()    # for no recognition
     start2 = time.time()    # for recognition
@@ -74,7 +75,7 @@ def face_recognition(): #
                     sum += confidence   # to get average of confidences
                     print("n : ", n, "sum : ", sum)
 
-                if (n == 30):
+                if (n == 30): # 평균 출력하고 True 반환
                     print("average is : ", (sum / 30),  "%") 
                     print(time.time() - start1, "sec")
                     cam.release()
@@ -98,7 +99,7 @@ def face_recognition(): #
                 return 0
 
 
-def face_recognition2(): #return id
+def face_recognition2(): # 연속 30번 등록된 얼굴로 확인되면 해당 얼굴의 id 반환
 
     start1 = time.time()    # for no recognition
     start2 = time.time()    # for recognition
@@ -149,17 +150,17 @@ def face_recognition2(): #return id
            
             if (confidence > 50): # initial : 0, changed for better distinction
                 
-                while (n >= 0) & (n < 30):
+                while (n >= 0) & (n < 30): # 30번 확인할 동안 동일인인지 확인
                     id_[n] = id  # first recognized id 
 
-                    if (id_[0] != id_[n]):
+                    if (id_[0] != id_[n]): # 중간에 다른 사람으로 인식되면 카운트 초기화
                         id_[0] = id_[n]
                         n = 0
                         break
 
                     n += 1
 
-                if (n == 30):
+                if (n == 30): #30번 동일인으로 판단되면 해당 인물의 id 반환
                     cam.release()
                     cv2.destroyAllWindows() # end of program
                     return id_[0]
@@ -173,7 +174,7 @@ def face_recognition2(): #return id
                     cv2.destroyAllWindows()
                     return 0
                     
-        else:
+        else: #얼굴 미탐지인 상태로 8초 경과 시 종료
             if (time.time() - start1 > 8) | (time.time() - start2 > 8): # nothing recognized
                 print("\n***false alarm***")
                 cam.release()
@@ -182,9 +183,9 @@ def face_recognition2(): #return id
 
 
 
-def face_add(face_id):
+def face_add(face_id): #얼굴 등록
 
-    if (face_id < 0) | (face_id > 10):
+    if (face_id < 0) | (face_id > 10): # 예외처리
         print("invalid id")
         return 0
     
@@ -195,7 +196,7 @@ def face_add(face_id):
     
     face_detector = cv2.CascadeClassifier('/home/user/opencv/data/haarcascades/haarcascade_frontalface_default.xml')
     
-    print("\nLook at the camera and wait ...")  # erase after test00000000000000000000000000000000
+    print("\nLook at the camera and wait ...") 
 
     cam = cv2.VideoCapture(cv2.CAP_V4L2)
     cam.set(3, 640) # set video width
@@ -230,7 +231,7 @@ def face_add(face_id):
                     return 0
             else:
                 cv2.imwrite("dataset/User." + str(face_id) + '.' + str(count) + ".jpg", gray[y:y+h,x:x+w])
-                cv2.imshow('image', img)    # erase after test0000000000000000000000000000000000000000000
+
         if count == 30: # Take 30 face sample and stop
             face_id += 1
             with open("/home/user/Desktop/face_id.txt", "w") as f:
@@ -243,7 +244,7 @@ def face_add(face_id):
     cv2.destroyAllWindows()
     return 0
 
-def face_training():
+def face_training(): #얼굴 학습
 
     # Path for face image database
     path = 'dataset'
@@ -274,13 +275,8 @@ def face_training():
     # Print the number of faces trained and end program
     print("\n [INFO] {0} faces trained. Exiting Program".format(len(np.unique(ids))))
 
-def remove_all():
+def remove_all(): #얼굴 전체 삭제
     os.system("rm -rf /home/user/Desktop/dataset/*.jpg")
     print("all data removed")
     with open("face_id.txt","w") as f:
         f.write("1")
-
-
-
-face_add()
-

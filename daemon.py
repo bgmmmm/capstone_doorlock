@@ -70,6 +70,3 @@ while True:
                 remove_all()
         except BaseException:
             continue
-
-               
-
